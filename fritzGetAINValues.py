@@ -10,7 +10,7 @@ from Influx import *
 
 def main():
     # basic configuration
-    logging.basicConfig(filename='fritz.log', level=logging.DEBUG, format='%(asctime)s %(levelname)s %(name)s %(message)s', datefmt='%d.%m.%Y %H:%M:%S')
+    logging.basicConfig(filename='fritz.log', level=logging.INFO, format='%(asctime)s %(levelname)s %(name)s %(message)s', datefmt='%d.%m.%Y %H:%M:%S')
 
     # read fritz.box credentials from enviroment variables from file ".env"
     load_dotenv()
