@@ -22,6 +22,21 @@ def main():
         logging.exception("FritzBox URL and/or FritzBox login credentials are missing. Program terminated.")
         sys.exit("FritzBox URL and/or FritzBox login credentials are missing. Program terminated.")
 
+    # read InfluxDB config values from file ".env"
+    influxServer=os.environ.get('influxServer')
+    influxPort=os.environ.get("influxPort")
+    influxDbName=os.environ.get("influxDbName")
+
+    # create an influxDBClient
+    influxDbClient = InfluxDBClient(host=influxServer, port=influxPort)
+    influxDbClient.switch_database(influxDbName)
+
+
+    if (not (influxServer and influxPort and influxDbName)):
+        logging.exception("InfluxDB configuration parameters are missing. Program terminated.")
+        sys.exit("InfluxDB configuration parameters are missing. Program terminated.")
+
+
     # get the session id from the FritzBox that is needed for all later commands
     SID = getFritzBoxSID(url=fritzUrl, user=fritzUser, password=fritzPassword)
     if (SID == "0000000000000000"):
@@ -35,7 +50,7 @@ def main():
     command = f"{fritzUrl}webservices/homeautoswitch.lua?switchcmd=getswitchlist&sid={SID}"
     fritzAINs = sendFritzRequest(command).split(",")
 
-    now = datetime.now() # current date and time, save for all looped calls to have the same time for each request for all AINs
+    now = datetime.utcnow() # current date and time, save for all looped calls to have the same time for each request for all AINs
 
     # loop over each power socket
     for fritzAIN in fritzAINs:
@@ -52,21 +67,19 @@ def main():
         command = f"{fritzUrl}webservices/homeautoswitch.lua?switchcmd=getswitchpower&ain={fritzAIN}&sid={SID}"
         ain_power = sendFritzRequest(command)
 
+        # get the current energy need in Wh
+        command = f"{fritzUrl}webservices/homeautoswitch.lua?switchcmd=getswitchenergy&ain={fritzAIN}&sid={SID}"
+        ain_energy = sendFritzRequest(command)
+
         # create new instance of a FritzActor and initialize it with the values from above
-        fritzActor = FritzActor(fritzAIN, ain_name, float(ain_temp)/10.0, ain_power, now.strftime("%d.%m.%Y, %H:%M:%S"))
+        fritzActor = FritzActor(fritzAIN, ain_name, float(ain_temp)/10.0, int(ain_power), int(ain_energy), now.strftime("%d.%m.%Y, %H:%M:%S"))
         # append that instance to the list of FritzActors for later use
         fritzActors.append(fritzActor)
 
 
     for fritzActor in fritzActors:
-        print (f"ain: {fritzActor.ain}, name: {fritzActor.name}, temp: {fritzActor.temp} °C, power: {fritzActor.power} mW, time: {fritzActor.timestamp}")
-
-
-
-
-    influxServer = "raspberrypi4"
-    influxPort = 8086
-    writeInfluxDBPoint(influxServer, influxPort)
+        print (f"ain: {fritzActor.ain}, name: {fritzActor.name}, temp: {fritzActor.temp} °C, power: {fritzActor.power} mW, energy: {fritzActor.energy}, time: {fritzActor.timestamp}")
+        writeInfluxDBPoint(influxDbClient, fritzActor)
 
     # logout, throw away SID
     # make sure to call this because the number of active sessions in a FritzBox is limited
