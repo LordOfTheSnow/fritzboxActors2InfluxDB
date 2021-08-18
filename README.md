@@ -28,13 +28,16 @@ I am not a professional programmer (any more), thus this code will most probably
 * additional Python modules: see reqirements.txt
 * Influx DB 1.8 reachable from your network (2.0 may work as well, but is untested)
 
-### Main subroutine
+### Installation
 
-The script to run is **fritzGetAINValues.py**. All other files just contain helper functions or class definitions.
+1. Clone the git repository from https://github.com/LordOfTheSnow/fritzboxActors2InfluxDB.git into that 
+2. Change to the created directory
+3. Create a Python virtual environment with `python3 -m venv venv`
+4. Activate that virtual environment with `source venv/bin/activate`
+5. Install the required Python modules via pip: `pip install -r requirements.txt`
+6. Create a file _.env_ and put in the configuration values
 
-The script expects various config values in a file called **.env** (for obvious reasons not provided in this repository).
-
-### Configuration values (.env)
+#### Configuration values (.env)
 
 * fritzUrl = "http://fritz.box/" - note the trailing slash!
 * fritzUser = "USER WITH SMART HOME RIGHTS"
@@ -43,17 +46,43 @@ The script expects various config values in a file called **.env** (for obvious 
 * influxPort = 8086
 * influxDbName = "fritzbox"
 
-The InfluxDB server and the database "fritzbox" has to exist already (well maybe the database not, it might get created on the first write attempt, I am not sure). I used the following influx command to create the InfluxDB:
+The InfluxDB server and the database "fritzbox" have to exist already (well maybe not the database, it might get created on the first write attempt, I am not sure). I used the following influx command to create the InfluxDB:
 
 `create database fritzbox with duration 365d replication 1 shard duration 7d name one_year`
 
 Use shorter values for the _duration_ and _shard duration_ if you want to. (The _duration_ values will determine how long the data will be stored until it will be automatically removed.)
 
-### Usage
 
-`fritzGetAINValues.py`
+### Usage 
 
-(Ideally run periodically with cron or a similar technique)
+7. From within the virtual environment, call the script with `python fritzGetAINValues.py`.
+
+The script will output the current values for the smart plugs that it finds.
+
+
+#### Run via periodically via cron
+
+If you want to run this script periodically via cron, you can call the wrapper script **cronscript.sh**.
+
+Call `crontab -e` to edit the cron table (crontab), e.g.: 
+
+```
+# m h  dom mon dow   command
+*/5 * * * * /home/pi/src/fritzboxActors2InfluxDB/cronscript.sh
+```
+This will run the command every five minutes. Edit the path to the script to wherever you put it. 
+The script assumes you have a Python virtual environment created with `python3 -m venv venv` in the same directory where you checked out the repository. The script will activate the virtual environment, call the Python interpreter with the script and will deactivate the virtual environment then.
+
+
+
+### Main subroutine
+
+The script to run is **fritzGetAINValues.py**. All other files just contain helper functions or class definitions.
+
+The script expects various config values in a file called **.env** (for obvious reasons not provided in this repository).
+
+
+
 
 ### Files and data created
 
