@@ -79,7 +79,7 @@ The script assumes you have a Python virtual environment created with `python3 -
 
 The script to run is **fritzGetAINValues.py**. All other files just contain helper functions or class definitions.
 
-The script expects various config values in a file called **.env** (for obvious reasons not provided in this repository).
+The script expects various config values in a file called **.env** (See above. For obvious reasons not provided in this repository).
 
 
 
@@ -116,6 +116,7 @@ This program does output (some) error messages on the console and into the logfi
 
 * Currently database authentiction is not yet supported but most probably will be in the future
 * If you grouped your actors in the Fritzbox, this script will most probably fail as groups are found additionally to the individual actors. This will be most probably corrected in the future as well.
+* Log rotation for _./fritz.log_ has not been implemented yet. See hint above!
 
 ## Additional documentation used (German)
 
