@@ -13,7 +13,9 @@ The main script **fritzGetAINValues.py** is to be called periodically via cron o
 * the overall engery consumption in Wh since initialization or last reset of that actor
 * the current timestamp in UTC timezone
 
-It will then store these values in an InfluxDB in a measurement named _ains_.
+It will then store these values in an [InfluxDB](https://www.influxdata.com) in a measurement named _ains_. From there they may visualized in applications such as [Grafana](https://grafana.com) (see grafana/panel_temperatures.json) for an example panel; the JSON code can be copied into the panel json field in Grafana).
+
+![grafana/GrafanaExample_20210819_155456.png](grafana/GrafanaExample_20210819_155456.png)
 
 ## Disclaimer
 
@@ -28,6 +30,7 @@ I am not a professional programmer (any more), thus this code will most probably
 * Python 3.7 or higher (may work below 3.7)
 * additional Python modules: see reqirements.txt
 * Influx DB 1.8 reachable from your network (2.0 may work as well, but is untested)
+* (Grafana for visualization)
 
 ### Installation
 
