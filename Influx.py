@@ -13,7 +13,8 @@ def writeInfluxDBPoint(influxDbClient, fritzActor):
             "fields": {
                 "temperature": fritzActor.temp,
                 "power": fritzActor.power,
-                "energy": fritzActor.energy
+                "energy": fritzActor.energy,
+                "state": fritzActor.state
             },
             "time": fritzActor.timestamp
         }

@@ -7,6 +7,7 @@ This is my first attempt to create a Python script that reads temperature and en
 The main script **fritzGetAINValues.py** is to be called periodically via cron or a similar technique. It will retrieve 
 * the AIN (actor identification number?)
 * the name of the actor (as given in the Fritz!Box configuration page for smart home devices)
+* the state (switched on/off) of the actor
 * the current temperature
 * the current power consumption in mW
 * the overall engery consumption in Wh since initialization or last reset of that actor
@@ -54,6 +55,8 @@ Use shorter values for the _duration_ and _shard duration_ if you want to. (The 
 
 
 ### Usage 
+
+#### Run from shell
 
 7. From within the virtual environment, call the script with `python fritzGetAINValues.py`.
 
