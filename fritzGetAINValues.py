@@ -9,14 +9,16 @@ from fritzUtils import *
 from Influx import *
 
 def main():
-    # basic configuration
-    logging.basicConfig(filename='fritz.log', level=logging.INFO, format='%(asctime)s %(levelname)s %(name)s %(message)s', datefmt='%d.%m.%Y %H:%M:%S')
-
-    # read fritz.box credentials from enviroment variables from file ".env"
+    # read fritz.box credentials and config values from enviroment variables from file ".env"
     load_dotenv()
-    fritzUrl=os.environ.get('fritzUrl')
+    fritzUrl=os.environ.get('fritzUrl', default="http://fritz.box")
     fritzUser=os.environ.get('fritzUser')
     fritzPassword=os.environ.get('fritzPassword')
+  
+    # logging
+    loglevel = eval(os.environ.get('loglevel', default="logging.INFO"))
+    logfilename = os.environ.get('logfilename', default="fritz.log")
+    logging.basicConfig(filename=logfilename, level=loglevel, format='%(asctime)s %(levelname)s %(name)s %(message)s', datefmt='%d.%m.%Y %H:%M:%S')
 
     if (not (fritzUrl and fritzUser and fritzPassword) ):
         logging.exception("FritzBox URL and/or FritzBox login credentials are missing. Program terminated.")
@@ -24,8 +26,8 @@ def main():
 
     # read InfluxDB config values from file ".env"
     influxServer=os.environ.get('influxServer')
-    influxPort=os.environ.get("influxPort")
-    influxDbName=os.environ.get("influxDbName")
+    influxPort=os.environ.get("influxPort", default=8086)
+    influxDbName=os.environ.get("influxDbName", default="fritzbox")
 
     # create an influxDBClient
     influxDbClient = InfluxDBClient(host=influxServer, port=influxPort)

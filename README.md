@@ -28,13 +28,13 @@ I am not a professional programmer (any more), thus this code will most probably
 ### Requirements
 
 * Python 3.7 or higher (may work below 3.7)
-* additional Python modules: see reqirements.txt
+* additional Python modules: see requirements.txt
 * Influx DB 1.8 reachable from your network (2.0 may work as well, but is untested)
 * (Grafana for visualization)
 
 ### Installation
 
-1. Clone the git repository from https://github.com/LordOfTheSnow/fritzboxActors2InfluxDB.git into that 
+1. Clone the git repository from https://github.com/LordOfTheSnow/fritzboxActors2InfluxDB.git 
 2. Change to the created directory
 3. Create a Python virtual environment with `python3 -m venv venv`
 4. Activate that virtual environment with `source venv/bin/activate`
@@ -49,6 +49,8 @@ I am not a professional programmer (any more), thus this code will most probably
 * influxServer = "hostname of Influx DB Server" - hostname only, no schema, no trailing slash!, e.g. "raspberrypi" or "192.168.178.4"
 * influxPort = 8086
 * influxDbName = "fritzbox"
+* loglevel = logging.INFO - set to one of the values listed under https://docs.python.org/3/library/logging.html#levels
+* logfilename = "fritz.log" - choose whatever filename you like
 
 The InfluxDB server and the database "fritzbox" have to exist already (well maybe not the database, it might get created on the first write attempt, I am not sure). I used the following influx command to create the InfluxDB:
 
@@ -63,14 +65,15 @@ Use shorter values for the _duration_ and _shard duration_ if you want to. (The 
 
 7. From within the virtual environment, call the script with `python fritzGetAINValues.py`.
 
-The script will output the current values for the smart plugs that it finds.
+The script will output the current values for the smart plugs that it finds and will also write them into the configured Influx database.
 
 
 #### Run via periodically via cron
 
 If you want to run this script periodically via cron, you can call the wrapper script **cronscript.sh**.
 
-Call `crontab -e` to edit the cron table (crontab), e.g.: 
+7. Set execute permissions for the script: `chmod ug+x cronscript.sh`
+8. Call `crontab -e` to edit the cron table (crontab), e.g.: 
 
 ```
 # m h  dom mon dow   command
