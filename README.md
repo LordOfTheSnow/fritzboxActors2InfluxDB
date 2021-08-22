@@ -1,5 +1,11 @@
 # fritzboxActors2InfluxDB
 
+[![GPLv3 license](https://img.shields.io/badge/License-GPLv3-blue.svg)](http://perso.crans.org/besson/LICENSE.html)
+[![Linux](https://svgshare.com/i/Zhy.svg)](https://svgshare.com/i/Zhy.svg)
+[![Python 3.7+](https://img.shields.io/badge/Python-3.7%2B-blue)](https://img.shields.io/badge/Python-3.7%2B-blue)
+[![InfluxDB 1.8](https://img.shields.io/badge/InfluxDB-1.8-orange)](https://img.shields.io/badge/InfluxDB-1.8-orange)
+
+
 ## What is it?
 
 This is my first attempt to create a Python script that reads temperature and energy data from AVM's (Fritz!) Smart Plugs (== power switches) FRITZ!DECT 200 (see https://en.avm.de/products/fritzdect/fritzdect-200/).
@@ -95,9 +101,7 @@ The script expects various config values in a file called **.env** (See above. F
 
 ### Files and data created
 
-1. ./fritz.log - Logfile, set the appropriate log level in this line of code in **fritzGetAINValues.py**:
-
-`logging.basicConfig(filename='fritz.log', level=logging.INFO, format='%(asctime)s %(levelname)s %(name)s %(message)s', datefmt='%d.%m.%Y %H:%M:%S')`
+1. ./fritz.log - Logfile (file name and log level can be changed in _.env._, see above)
 
 This program does output (some) error messages on the console and into the logfile. Set the loglevel to `level=logging.DEBUG` to get more infos.
 
@@ -116,6 +120,7 @@ This program does output (some) error messages on the console and into the logfi
             "temperature": fritzActor.temp,
             "power": fritzActor.power,
             "energy": fritzActor.energy
+            "state": fritzActor.state
         },
         "time": fritzActor.timestamp
     }
