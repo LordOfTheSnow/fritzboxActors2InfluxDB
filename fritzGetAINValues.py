@@ -52,7 +52,8 @@ def main():
     command = f"{fritzUrl}webservices/homeautoswitch.lua?switchcmd=getswitchlist&sid={SID}"
     fritzAINs = sendFritzRequest(command).split(",")
 
-    now = datetime.utcnow() # current date and time (in UTC to avoid ambiguties with InfluxDB), save for all looped calls to have the same time for each request for all AINs
+    utcnow = datetime.utcnow() # current date and time (in UTC to avoid ambiguties with InfluxDB), save for all looped calls to have the same time for each request for all AINs
+    logging.debug(f"utcnow: {utcnow}")
 
     # loop over each power socket
     for fritzAIN in fritzAINs:
@@ -78,13 +79,13 @@ def main():
         ain_energy = sendFritzRequest(command)
 
         # create new instance of a FritzActor and initialize it with the values from above
-        fritzActor = FritzActor(fritzAIN, ain_name, ain_state, float(ain_temp)/10.0, int(ain_power), int(ain_energy), now.strftime("%d.%m.%Y, %H:%M:%S"))
+        fritzActor = FritzActor(fritzAIN, ain_name, ain_state, float(ain_temp)/10.0, int(ain_power), int(ain_energy), utcnow.isoformat())
         # append that instance to the list of FritzActors for later use
         fritzActors.append(fritzActor)
 
 
     for fritzActor in fritzActors:
-        print (f"ain: {fritzActor.ain}, name: {fritzActor.name}, state: {fritzActor.state}, temp: {fritzActor.temp} °C, power: {fritzActor.power} mW, energy: {fritzActor.energy}, time: {fritzActor.timestamp}")
+        print (f"ain: {fritzActor.ain}, name: {fritzActor.name}, state: {fritzActor.state}, temp: {fritzActor.temp} °C, power: {fritzActor.power} mW, energy: {fritzActor.energy}, time (UTC): {fritzActor.timestamp}")
         writeInfluxDBPoint(influxDbClient, fritzActor)
 
     # logout, throw away SID

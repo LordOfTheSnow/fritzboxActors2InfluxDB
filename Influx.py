@@ -19,4 +19,4 @@ def writeInfluxDBPoint(influxDbClient, fritzActor):
             "time": fritzActor.timestamp
         }
     ]
-    influxDbClient.write_points(json_body)
+    influxDbClient.write_points(json_body, time_precision="ms")
