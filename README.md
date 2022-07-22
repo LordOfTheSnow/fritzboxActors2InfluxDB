@@ -58,7 +58,7 @@ I am not a professional programmer (any more), thus this code will most probably
 * loglevel = logging.INFO - set to one of the values listed under https://docs.python.org/3/library/logging.html#levels
 * logfilename = "fritz.log" - choose whatever filename you like
 
-The InfluxDB server and the database "fritzbox" have to exist already (well maybe not the database, it might get created on the first write attempt, I am not sure). I used the following influx command to create the InfluxDB:
+The InfluxDB server and the database ("fritzbox" in this example) have to exist already. I used the following influx command to create the InfluxDB:
 
 `create database fritzbox with duration 365d replication 1 shard duration 7d name one_year`
 

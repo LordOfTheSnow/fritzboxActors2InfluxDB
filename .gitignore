@@ -4,3 +4,4 @@ venv/
 .env
 fritz.log
 temp.sh
+*.code-workspace
