@@ -5,3 +5,4 @@ venv/
 fritz.log
 temp.sh
 *.code-workspace
+cronscript.sh
