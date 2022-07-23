@@ -23,20 +23,3 @@ def writeInfluxDBPoint(influxDbClient, bucket, fritzActor):
         }
         point = Point.from_dict(dict_structure, WritePrecision.MS)
         write_api.write(bucket=bucket, record=point)
-
-    # json_body = [
-    #     {
-    #         "measurement": "ains",
-    #         "tags": {
-    #             "ain": fritzActor.ain,
-    #             "name": fritzActor.name
-    #         },
-    #         "fields": {
-    #             "temperature": fritzActor.temp,
-    #             "power": fritzActor.power,
-    #             "energy": fritzActor.energy,
-    #             "state": fritzActor.state
-    #         },
-    #         "time": fritzActor.timestamp
-    #     }
-    # ]

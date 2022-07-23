@@ -27,15 +27,17 @@ def main():
         logging.exception("FritzBox URL and/or FritzBox login credentials are missing. Program terminated.")
         sys.exit("FritzBox URL and/or FritzBox login credentials are missing. Program terminated.")
 
-    influxVersion=os.environ.get("influxVersion", default=2)
+    influxVersion=os.environ.get("influxVersion", default="2")
 
     # read InfluxDB config values from file ".env"
-    influxServer=os.environ.get('influxServer')
-    influxPort=os.environ.get("influxPort", default=8086)
+    influxUrl=os.environ.get('influxUrl')
     influxDbName=os.environ.get("influxDbName", default="fritzbox")
     influxRetentionPolicy=os.environ.get("influxRetentionPolicy")
 
     influxUrl=os.environ.get('INFLUXDB_V2_URL')
+    influxOrg=os.environ.get('INFLUXDB_V2_ORG', default='-')
+    influxToken=os.environ.get('INFLUXDB_V2_TOKEN')
+    influxBucket=os.environ.get('INFLUXDB_V2_BUCKET')
 
     # get the session id from the FritzBox that is needed for all later commands
     SID = getFritzBoxSID(url=fritzUrl, user=fritzUser, password=fritzPassword)
@@ -83,18 +85,39 @@ def main():
 
 
     if influxVersion == "1":
-        if (not (influxServer and influxPort and influxDbName)):
+        if (not (influxUrl and influxDbName)):
             logging.exception("InfluxDB configuration parameters are missing. Program terminated.")
-            sys.exit("InfluxDB configuration parameters are missing. Program terminated.")
+            sendFritzLogout(fritzUrl,SID)
+            sys.exit("InfluxDB configuration parameters are missing. Program terminated. See log file for details.")
 
-        bucket = influxDbName
+        # V1.8+ of InfluxDB does not use buckets, but the V2 api needs the bucket parameter
+        #   that is created by the db name + the retention policy name in the format
+        #   "db/rp"
+        bucket = influxDbName 
         if influxRetentionPolicy:
             bucket += "/" + influxRetentionPolicy
-        with InfluxDBClient(url=f"http://{influxServer}:{influxPort}", org='-') as influxDbClient:
+        with InfluxDBClient(url=influxUrl, org='-') as influxDbClient:
 
             for fritzActor in fritzActors:
                 print (f"ain: {fritzActor.ain}, name: {fritzActor.name}, state: {fritzActor.state}, temp: {fritzActor.temp} °C, power: {fritzActor.power} mW, energy: {fritzActor.energy}, time (UTC): {fritzActor.timestamp}")
                 writeInfluxDBPoint(influxDbClient, bucket, fritzActor)
+
+    elif influxVersion == "2":
+        if (not (influxUrl and influxToken and influxBucket)):
+            logging.exception("InfluxDB configuration parameters are missing. Program terminated.")
+            sendFritzLogout(fritzUrl,SID)
+            sys.exit("InfluxDB configuration parameters are missing. Program terminated. See log file for details.")
+
+        with InfluxDBClient(url=influxUrl, token=influxToken, org=influxOrg) as influxDbClient:
+            for fritzActor in fritzActors:
+                print (f"ain: {fritzActor.ain}, name: {fritzActor.name}, state: {fritzActor.state}, temp: {fritzActor.temp} °C, power: {fritzActor.power} mW, energy: {fritzActor.energy}, time (UTC): {fritzActor.timestamp}")
+                writeInfluxDBPoint(influxDbClient, influxBucket, fritzActor)
+
+    else:
+        logging.exception('No InfluxDB version specified in configuration. Set influxVersion = "1" or 2 in .env. Program terminated.')
+        sendFritzLogout(fritzUrl,SID)
+        sys.exit("InfluxDB configuration parameters are missing. Program terminated. See log file for details.")
+
 
     # logout, throw away SID
     # make sure to call this because the number of active sessions in a FritzBox is limited
