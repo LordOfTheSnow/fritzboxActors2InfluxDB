@@ -166,6 +166,6 @@ This program does output (some) error messages on the console and into the logfi
 
 ## History
 
-* 21-Dec-2022: Release 2.0.1: updated requirements
+* 21-Dec-2022: Release 2.0.2: updated requirements
 * 23-Jul-2022: Release 2.0, you can now choose if you want to use an InfluxDB 1.8 or 2 
 * 03-Sep-2021: fixed #1 incorrect timestamp - https://github.com/LordOfTheSnow/fritzboxActors2InfluxDB/issues/1#issue-986195302
